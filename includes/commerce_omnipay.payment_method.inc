@@ -28,10 +28,6 @@ function commerce_omnipay_omnipay_submit_form_validate() {
 }
 
 function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form, $pane_values, $order, $charge) {
-  dsm($charge);
-  dsm($pane_values);
-  dsm($payment_method);
-
   $active_gateway = variable_get("commerce_omnipay_active_gateway", "");
   $all_gateways = commerce_omnipay_supported_gateways();
 
@@ -39,18 +35,19 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
   $current_params = commerce_omnipay_get_gateway_settings($active_gateway);
   $gateway->initialize($current_params);
 
-  watchdog("SUP", "<pre>" . print_r($charge, true) . "</pre>");
-  watchdog("SUP", "<pre>" . print_r($pane_values, true) . "</pre>");
-  watchdog("SUP", "<pre>" . print_r($payment_method, true) . "</pre>");
+  $transaction = commerce_payment_transaction_new('commerce_stripe', $order->order_id);
+  $transaction->instance_id = $payment_method['instance_id'];
+  $transaction->amount = $charge['amount'];
+  $transaction->currency_code = $charge['currency_code'];
+  $transaction->data['gateway'] = $active_gateway;
 
-
-  $data = [
-    'number' => $pane_values['credit_card']['number'],
-    'expiryMonth' => $pane_values['credit_card']['exp_month'],
-    'expiryYear' => $pane_values['credit_card']['exp_year'],
-    'cvv' => $pane_values['credit_card']['code']
-  ];
   try {
+    $data = [
+      'number' => $pane_values['credit_card']['number'],
+      'expiryMonth' => $pane_values['credit_card']['exp_month'],
+      'expiryYear' => $pane_values['credit_card']['exp_year'],
+      'cvv' => $pane_values['credit_card']['code']
+    ];
     $response = $gateway->purchase(
       [
         'amount' => $charge['amount'] / 100,
@@ -59,20 +56,25 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
       ]
     )->send();
 
-    // Process response
+    // Process response.
     if ($response->isSuccessful()) {
       watchdog("Commerce Omnipay", "<pre>" . print_r($response, TRUE) . "</pre>");
-    }
-    elseif ($response->isRedirect()) {
-      watchdog("Commerce Omnipay", "<pre>" . print_r($response, TRUE) . "</pre>");
+      $transaction->remote_id = $response->getTransactionReference();
+      $transaction->message = t('Payment completed successfully.');
+      $transaction->status = COMMERCE_PAYMENT_STATUS_SUCCESS;
+      commerce_payment_transaction_save($transaction);
     }
     else {
       watchdog("Commerce Omnipay", "<pre>" . print_r($response, TRUE) . "</pre>");
+      drupal_set_message($response->getMessage());
+      return FALSE;
     }
-
   }
   catch (Exception $e) {
     watchdog("Commerce Omnipay", "<pre>" . print_r($e->getMessage(), TRUE) . "</pre>");
+    drupal_set_message($e->getMessage());
+    return FALSE;
+
   }
 
 
