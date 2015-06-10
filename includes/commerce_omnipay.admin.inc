@@ -40,18 +40,27 @@ function commerce_omnipay_settings_form($form, &$form_state) {
         ),
       ),
     );
+
+    $form[$key]['help'] = array(
+      '#type' => 'markup',
+      '#markup' => '<p>' . $gateway_info['description'] . '</p>',
+    );
+
     $gateway = Omnipay::create($gateway_info['gateway']);
     $default_params = $gateway->getDefaultParameters();
     $current_params = commerce_omnipay_get_gateway_settings($key);
     foreach ($default_params as $parm_key => $parm_value) {
       $default_value = (isset($current_params[$parm_key]) ? $current_params[$parm_key] : $default_params[$parm_key]);
       $var_type = gettype($parm_value);
+      $label = "";
+      preg_match_all('/((?:^|[A-Z])[a-z]+)/',$parm_key,$label);
+      $label = ucwords(implode(" ", array_pop($label)));
 
       switch ($var_type) {
         case 'boolean':
           $form[$key][$parm_key] = array(
             '#type' => "select",
-            '#title' => $parm_key,
+            '#title' => $label,
             '#default_value' => $default_value,
             '#options' => array(
               '1' => "Yes",
@@ -63,7 +72,7 @@ function commerce_omnipay_settings_form($form, &$form_state) {
         case 'string':
           $form[$key][$parm_key] = array(
             '#type' => "textfield",
-            '#title' => $parm_key,
+            '#title' => $label,
             '#default_value' => $default_value,
           );
           break;
