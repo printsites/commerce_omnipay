@@ -43,34 +43,48 @@ function commerce_omnipay_supported_gateways() {
   $gateways['stripe'] = array(
     'label' => "Stripe",
     'gateway' => "Stripe",
+    'description' => "Stripe",
+    'website' => "http://stripe.com",
   );
 
   $gateways['PayPal_Pro'] = array(
     'label' => "PayPal Pro",
     'gateway' => "PayPal_Pro",
+    'description' => "Paypal",
+    'website' => "http://stripe.com",
   );
 
   $gateways['WorldPay'] = array(
     'label' => "PayPal",
     'gateway' => "PayPal",
+    'description' => "Stripe",
+    'website' => "http://stripe.com",
   );
 
   $gateways['WorldPay'] = array(
     'label' => "WorldPay",
     'gateway' => "WorldPay",
+    'description' => "Stripe",
+    'website' => "http://stripe.com",
   );
 
   $gateways['AuthorizeNet_AIM'] = array(
     'label' => "AuthorizeNet_AIM",
     'gateway' => "AuthorizeNet_AIM",
+    'description' => "Stripe",
+    'website' => "http://stripe.com",
   );
+
+  drupal_alter('commerce_omnipay_gateways', $gateways);
 
   return $gateways;
 
 }
 
 function commerce_omnipay_get_gateway_settings($gateway) {
-  return variable_get("commerce_omnipay_gateway_settings_" . $gateway, array());
+  $settings = variable_get("commerce_omnipay_gateway_settings_" . $gateway, array());
+  drupal_alter('commerce_omnipay_settings', $settings, $gateway);
+  return $settings;
 }
 
 function commerce_omnipay_set_gateway_settings($gateway, $settings) {
