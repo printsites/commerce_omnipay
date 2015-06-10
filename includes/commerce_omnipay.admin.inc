@@ -32,8 +32,13 @@ function commerce_omnipay_settings_form($form, &$form_state) {
       '#type' => "fieldset",
       '#title' => "Settings For Gateway: " . $gateway_info['label'],
       '#tree' => TRUE,
-      '#collapsible' => TRUE,
-      '#collapsed' => ($key == $active_gateway ? FALSE : TRUE),
+      '#collapsible' => FALSE,
+      '#collapsed' => FALSE,
+      '#states' => array(
+        'visible' => array(
+          ':input[name="omnipay_active_gateway"]' => array('value' => $key),
+        ),
+      ),
     );
     $gateway = Omnipay::create($gateway_info['gateway']);
     $default_params = $gateway->getDefaultParameters();

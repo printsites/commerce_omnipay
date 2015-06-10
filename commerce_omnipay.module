@@ -1,5 +1,37 @@
 <?php
-use Omnipay\Omnipay;
+
+/**
+ * Implements hook_menu().
+ */
+function commerce_omnipay_menu() {
+  $items = array();
+  $items['admin/commerce/payment-gateways'] = array(
+    'title' => 'Payment Gateways',
+    'page callback' => 'commerce_omnipay_settings_page',
+    'access arguments' => array('configure store'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/commerce_omnipay.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_commerce_payment_method_info().
+ */
+function commerce_omnipay_commerce_payment_method_info() {
+  $payment_methods['omnipay'] = array(
+    'base' => 'commerce_omnipay_omnipay',
+    'title' => t('Omnipay'),
+    'short_title' => t('Omnipay'),
+    'description' => t('Omnipay'),
+    'terminal' => FALSE,
+    'offsite' => FALSE,
+    'offsite_autoredirect' => FALSE,
+    'file' => 'includes/commerce_omnipay.payment_method.inc',
+
+  );
+  return $payment_methods;
+}
 
 /**
  * List supported gateways.
@@ -44,37 +76,3 @@ function commerce_omnipay_get_gateway_settings($gateway) {
 function commerce_omnipay_set_gateway_settings($gateway, $settings) {
   return variable_set("commerce_omnipay_gateway_settings_" . $gateway, $settings);
 }
-
-/**
- * Implements hook_menu().
- */
-function commerce_omnipay_menu() {
-  $items = array();
-  $items['admin/commerce/onmipay'] = array(
-    'title' => 'Onmipay',
-    'page callback' => 'commerce_omnipay_settings_page',
-    'access arguments' => array('configure store'),
-    'type' => MENU_NORMAL_ITEM,
-    'file' => 'includes/commerce_omnipay.admin.inc',
-  );
-  return $items;
-}
-
-/**
- * Implements hook_commerce_payment_method_info().
- */
-function commerce_omnipay_commerce_payment_method_info() {
-  $payment_methods['omnipay'] = array(
-    'base' => 'commerce_omnipay_omnipay',
-    'title' => t('Omnipay'),
-    'short_title' => t('Omnipay'),
-    'description' => t('Omnipay'),
-    'terminal' => FALSE,
-    'offsite' => FALSE,
-    'offsite_autoredirect' => FALSE,
-    'file' => 'includes/commerce_omnipay.payment_method.inc',
-
-  );
-  return $payment_methods;
-}
-
