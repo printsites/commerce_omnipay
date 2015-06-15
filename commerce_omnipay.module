@@ -8,11 +8,24 @@ function commerce_omnipay_menu() {
   $items['admin/commerce/payment-gateways'] = array(
     'title' => 'Payment Gateways',
     'page callback' => 'commerce_omnipay_settings_page',
-    'access arguments' => array('configure store'),
+    'access arguments' => array('administer payment gateways'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/commerce_omnipay.admin.inc',
   );
   return $items;
+}
+
+/**
+ * Implements hook_access().
+ */
+function commerce_omnipay_permission() {
+  return array(
+    'administer payment gateways' => array(
+      'title' => t('Administer Payment Gateways'),
+      'description' => t('Administer Commerce Omnipay Payment Gateway Settings.'),
+    ),
+  );
+
 }
 
 /**
