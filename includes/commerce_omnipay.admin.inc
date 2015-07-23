@@ -38,6 +38,9 @@ function commerce_omnipay_settings_form($form, &$form_state) {
         'visible' => array(
           ':input[name="omnipay_active_gateway"]' => array('value' => $key),
         ),
+        'required' => array(
+          ':input[name="omnipay_active_gateway"]' => array('value' => $key),
+        ),
       ),
     );
 
@@ -90,6 +93,14 @@ function commerce_omnipay_settings_form($form, &$form_state) {
 }
 
 function commerce_omnipay_settings_form_validate($form, &$form_state) {
+
+  $active = $form_state['values']['omnipay_active_gateway'];
+  foreach ($form_state['values'][$active] as $key => $value) {
+    if (empty($value)) {
+      //Could use a better error message.
+      form_set_error($key, "Please provide a value for " . $key);
+    }
+  }
 
 }
 
