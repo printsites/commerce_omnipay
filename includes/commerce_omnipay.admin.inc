@@ -19,8 +19,15 @@ function commerce_omnipay_settings_form($form, &$form_state) {
     $gateway_options[$key] = $value['label'];
   }
   $active_gateway = variable_get("commerce_omnipay_active_gateway", "");
+
+  $form['current_active_gateway'] = array(
+    '#type' => 'item',
+    '#markup' => '<h3>Current Gateway: '.$gateways[$active_gateway]['label'].'</h3>'
+
+  );
+
   $form['omnipay_active_gateway'] = array(
-    '#title' => "Active Gateway",
+    '#title' => t('Select Gateway'),
     '#required' => TRUE,
     '#type' => "select",
     '#options' => $gateway_options,

@@ -56,36 +56,36 @@ function commerce_omnipay_supported_gateways() {
   $gateways['stripe'] = array(
     'label' => "Stripe",
     'gateway' => "Stripe",
-    'description' => "Stripe",
+    'description' => "Stripe is a suite of APIs that powers commerce for businesses of all sizes.",
     'website' => "http://stripe.com",
   );
 
   $gateways['PayPal_Pro'] = array(
     'label' => "PayPal Pro",
     'gateway' => "PayPal_Pro",
-    'description' => "Paypal",
-    'website' => "http://stripe.com",
+    'description' => "PayPal Payments Pro has the customization capability, technical maturity, and proven security that is needed to build professional-grade eCommerce sites.",
+    'website' => "https://www.paypal.com/webapps/mpp/paypal-payments-pro",
   );
 
   $gateways['WorldPay'] = array(
     'label' => "PayPal",
     'gateway' => "PayPal",
-    'description' => "Stripe",
-    'website' => "http://stripe.com",
+    'description' => "PayPal is the faster, safer way to send money, make an online payment, receive money or set up a merchant account.",
+    'website' => "https://www.paypal.com/us/webapps/mpp/accept-payments-online",
   );
 
   $gateways['WorldPay'] = array(
     'label' => "WorldPay",
     'gateway' => "WorldPay",
-    'description' => "Stripe",
-    'website' => "http://stripe.com",
+    'description' => "At Worldpay, we can provide you with card processing services for your business from card machines, online payments to mail and telephone orders.",
+    'website' => "http://www.worldpay.com/us",
   );
 
   $gateways['AuthorizeNet_AIM'] = array(
     'label' => "AuthorizeNet_AIM",
     'gateway' => "AuthorizeNet_AIM",
-    'description' => "Stripe",
-    'website' => "http://stripe.com",
+    'description' => "Authorize.net payment gateway enables internet merchants to accept online payments via credit card and e-check.",
+    'website' => "http://www.authorize.net/",
   );
 
   drupal_alter('commerce_omnipay_gateways', $gateways);
