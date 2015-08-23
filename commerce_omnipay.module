@@ -82,7 +82,7 @@ function commerce_omnipay_supported_gateways() {
   );
 
   $gateways['AuthorizeNet_AIM'] = array(
-    'label' => "AuthorizeNet_AIM",
+    'label' => "Authorize.net",
     'gateway' => "AuthorizeNet_AIM",
     'description' => "Authorize.net payment gateway enables internet merchants to accept online payments via credit card and e-check.",
     'website' => "http://www.authorize.net/",
