@@ -6,7 +6,7 @@
 function commerce_omnipay_menu() {
   $items = array();
   $items['admin/commerce/payment-gateways'] = array(
-    'title' => 'Payment Gateways',
+    'title' => 'Payment',
     'page callback' => 'commerce_omnipay_settings_page',
     'access arguments' => array('administer payment gateways'),
     'type' => MENU_NORMAL_ITEM,

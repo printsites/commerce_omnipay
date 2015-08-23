@@ -93,7 +93,7 @@ function commerce_omnipay_settings_form($form, &$form_state) {
 
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => 'Submit',
+    '#value' => 'Save Payment Settings',
   );
 
   return $form;
@@ -122,5 +122,5 @@ function commerce_omnipay_settings_form_submit($form, &$form_state) {
       commerce_omnipay_set_gateway_settings($key, $gateway_settings);
     }
   }
-  drupal_set_message("Payment gateway settings updated");
+  drupal_set_message("Payment settings updated");
 }
