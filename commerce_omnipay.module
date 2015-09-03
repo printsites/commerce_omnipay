@@ -35,6 +35,7 @@ function commerce_omnipay_commerce_payment_method_info() {
   $payment_methods['omnipay'] = array(
     'base' => 'commerce_omnipay_omnipay',
     'title' => t('Omnipay'),
+    'active' => TRUE,
     'short_title' => t('Omnipay'),
     'description' => t('Omnipay'),
     'terminal' => FALSE,
