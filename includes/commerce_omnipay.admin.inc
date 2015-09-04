@@ -22,7 +22,7 @@ function commerce_omnipay_settings_form($form, &$form_state) {
 
   $form['current_active_gateway'] = array(
     '#type' => 'item',
-    '#markup' => '<h3>Current Gateway: '.$gateways[$active_gateway]['label'].'</h3>'
+    '#markup' => '<h3>Current Gateway: '.(isset($gateways[$active_gateway]) ? $gateways[$active_gateway]['label'] : "No Active Gateway").'</h3>'
 
   );
 
