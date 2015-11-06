@@ -78,7 +78,7 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
 
       $shipping = FALSE;
       if (isset($order->commerce_customer_shipping['und'][0]['profile_id'])) {
-        $shipping = commerce_customer_profile_load($order->commerce_customer_sf_shipping['und'][0]['profile_id']);
+        $shipping = commerce_customer_profile_load($order->commerce_customer_shipping['und'][0]['profile_id']);
       } //TODO: Remove this.
       elseif (isset($order->commerce_customer_sf_shipping['und'][0]['profile_id'])) {
         $shipping = commerce_customer_profile_load($order->commerce_customer_sf_shipping['und'][0]['profile_id']);
@@ -92,6 +92,8 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
         $data['shippingState'] = $shipping->commerce_customer_address['und'][0]['administrative_area'];
         $data['shippingCountry'] = $shipping->commerce_customer_address['und'][0]['country'];
       }
+
+
       $response = $gateway->purchase(
         [
           'amount' => $charge['amount'] / 100,
