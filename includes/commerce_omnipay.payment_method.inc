@@ -61,6 +61,37 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
         'expiryYear' => $pane_values['credit_card']['exp_year'],
         'cvv' => $pane_values['credit_card']['code']
       ];
+
+      if (isset($order->commerce_customer_billing['und'][0]['profile_id'])) {
+        $billing = commerce_customer_profile_load($order->commerce_customer_billing['und'][0]['profile_id']);
+        $data['billingAddress1'] = $billing->commerce_customer_address['und'][0]['thoroughfare'];
+        $data['billingAddress2'] = $billing->commerce_customer_address['und'][0]['premise'];
+        $data['billingCity'] = $billing->commerce_customer_address['und'][0]['locality'];
+        $data['billingPostcode'] = $billing->commerce_customer_address['und'][0]['postal_code'];
+        $data['billingState'] = $billing->commerce_customer_address['und'][0]['administrative_area'];
+        $data['billingCountry'] = $billing->commerce_customer_address['und'][0]['country'];
+
+        if (isset($billing->field_phone['und'][0]['value'])) {
+          $data['billingPhone'] = $billing->field_phone['und'][0]['value'];
+        }
+      }
+
+      $shipping = FALSE;
+      if (isset($order->commerce_customer_shipping['und'][0]['profile_id'])) {
+        $shipping = commerce_customer_profile_load($order->commerce_customer_sf_shipping['und'][0]['profile_id']);
+      } //TODO: Remove this.
+      elseif (isset($order->commerce_customer_sf_shipping['und'][0]['profile_id'])) {
+        $shipping = commerce_customer_profile_load($order->commerce_customer_sf_shipping['und'][0]['profile_id']);
+      }
+
+      if ($shipping) {
+        $data['shippingAddress1'] = $shipping->commerce_customer_address['und'][0]['thoroughfare'];
+        $data['shippingAddress2'] = $shipping->commerce_customer_address['und'][0]['premise'];
+        $data['shippingCity'] = $shipping->commerce_customer_address['und'][0]['locality'];
+        $data['shippingPostcode'] = $shipping->commerce_customer_address['und'][0]['postal_code'];
+        $data['shippingState'] = $shipping->commerce_customer_address['und'][0]['administrative_area'];
+        $data['shippingCountry'] = $shipping->commerce_customer_address['und'][0]['country'];
+      }
       $response = $gateway->purchase(
         [
           'amount' => $charge['amount'] / 100,
@@ -68,7 +99,6 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
           'card' => $data,
         ]
       )->send();
-
       // Process response.
       if ($response->isSuccessful()) {
         watchdog("Commerce Omnipay", "<pre>" . print_r($response, TRUE) . "</pre>");
