@@ -103,19 +103,16 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
       )->send();
       // Process response.
       if ($response->isSuccessful()) {
-        watchdog("Commerce Omnipay", "<pre>" . print_r($response, TRUE) . "</pre>");
         $transaction->remote_id = $response->getTransactionReference();
         $transaction->message = t('Payment completed successfully.');
         $transaction->status = COMMERCE_PAYMENT_STATUS_SUCCESS;
         commerce_payment_transaction_save($transaction);
       }
       else {
-        watchdog("Commerce Omnipay", "<pre>" . print_r($response, TRUE) . "</pre>");
         drupal_set_message($response->getMessage());
         return FALSE;
       }
     } catch (Exception $e) {
-      watchdog("Commerce Omnipay", "<pre>" . print_r($e->getMessage(), TRUE) . "</pre>");
       drupal_set_message($e->getMessage());
       return FALSE;
 
