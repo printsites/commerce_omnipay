@@ -14,11 +14,11 @@ function commerce_omnipay_omnipay_submit_form() {
   // Ensure active gateway is actually valid.
   if (isset($all_gateways[$active_gateway])) {
     $credit_card_fields = array(
-      'owner' => '',
-      'number' => '',
-      'exp_month' => '',
-      'exp_year' => '',
-      'code' => '',
+        'owner' => '',
+        'number' => '',
+        'exp_month' => '',
+        'exp_year' => '',
+        'code' => '',
     );
 
     $form = commerce_payment_credit_card_form($credit_card_fields);
@@ -26,8 +26,8 @@ function commerce_omnipay_omnipay_submit_form() {
   }
   else {
     $form['payment_error'] = array(
-      '#type' => "markup",
-      '#markup' => "This website does not require payment",
+        '#type' => "markup",
+        '#markup' => "This website does not require payment",
     );
   }
 
@@ -48,20 +48,15 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
     $current_params = commerce_omnipay_get_gateway_settings($active_gateway);
     $gateway->initialize($current_params);
 
-    $transaction = commerce_payment_transaction_new('commerce_stripe', $order->order_id);
-    $transaction->instance_id = $payment_method['instance_id'];
+    $transaction = commerce_payment_transaction_new($payment_method['module'], $order->order_id);
+    $transaction->instance_id = $payment_method['instance_id'].'|'.$all_gateways[$active_gateway]['gateway'];
     $transaction->amount = $charge['amount'];
     $transaction->currency_code = $charge['currency_code'];
     $transaction->data['gateway'] = $active_gateway;
 
     try {
-      $data = [
-        'number' => $pane_values['credit_card']['number'],
-        'expiryMonth' => $pane_values['credit_card']['exp_month'],
-        'expiryYear' => $pane_values['credit_card']['exp_year'],
-        'cvv' => $pane_values['credit_card']['code']
-      ];
 
+      $data = array();
       if (isset($order->commerce_customer_billing['und'][0]['profile_id'])) {
         $billing = commerce_customer_profile_load($order->commerce_customer_billing['und'][0]['profile_id']);
         $data['billingAddress1'] = $billing->commerce_customer_address['und'][0]['thoroughfare'];
@@ -92,20 +87,36 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
         $data['shippingState'] = $shipping->commerce_customer_address['und'][0]['administrative_area'];
         $data['shippingCountry'] = $shipping->commerce_customer_address['und'][0]['country'];
       }
+      // Non-PAN Request Information Logging
+      $request_log = $data;
+      $formattedAmount = number_format(commerce_currency_amount_to_decimal($charge['amount'], $charge['currency_code']),2);
+      $request_log['currency'] = $charge['currency_code'];
+      $request_log['amount'] = $formattedAmount;
+      $request_log['last_four']=substr((string)$pane_values['credit_card']['number'], -4);
 
+      $data['number']=$pane_values['credit_card']['number'];
+      $data['expiryMonth']= $pane_values['credit_card']['exp_month'];
+      $data['expiryYear']= $pane_values['credit_card']['exp_year'];
+      $data['cvv']=$pane_values['credit_card']['code'];
 
       $response = $gateway->purchase(
-        [
-          'amount' => $charge['amount'] / 100,
-          'currency' => $charge['currency_code'],
-          'card' => $data,
-        ]
+          [
+              'amount' => $formattedAmount,
+              'currency' => $charge['currency_code'],
+              'card' => $data,
+          ]
       )->send();
+      $log = array('Successful'=>$response->isSuccessful(),'ReasonCode'=>$response->getCode(),'Message'=>$response->getMessage(),'AVSCode'=>$response->getAVSCode(),'TransReference'=>$response->getTransactionReference(),'RequestData'=>$request_log);
+      watchdog("Commerce Omnipay", "<pre>" . json_encode($log). "</pre>");
       // Process response.
       if ($response->isSuccessful()) {
         $transaction->remote_id = $response->getTransactionReference();
         $transaction->message = t('Payment completed successfully.');
         $transaction->status = COMMERCE_PAYMENT_STATUS_SUCCESS;
+        $transaction->remote_status = 'purchase';
+        $log['GatewayParameter']=$current_params;
+        $transaction->payload[REQUEST_TIME] = $log;
+        $transaction->message_variables = $log;
         commerce_payment_transaction_save($transaction);
       }
       else {
