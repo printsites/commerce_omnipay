@@ -59,15 +59,17 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
       $data = array();
       if (isset($order->commerce_customer_billing['und'][0]['profile_id'])) {
         $billing = commerce_customer_profile_load($order->commerce_customer_billing['und'][0]['profile_id']);
-        $data['billingAddress1'] = $billing->commerce_customer_address['und'][0]['thoroughfare'];
-        $data['billingAddress2'] = $billing->commerce_customer_address['und'][0]['premise'];
-        $data['billingCity'] = $billing->commerce_customer_address['und'][0]['locality'];
-        $data['billingPostcode'] = $billing->commerce_customer_address['und'][0]['postal_code'];
-        $data['billingState'] = $billing->commerce_customer_address['und'][0]['administrative_area'];
-        $data['billingCountry'] = $billing->commerce_customer_address['und'][0]['country'];
+        if ($billing) {
+          $data['billingAddress1'] = $billing->commerce_customer_address['und'][0]['thoroughfare'];
+          $data['billingAddress2'] = $billing->commerce_customer_address['und'][0]['premise'];
+          $data['billingCity'] = $billing->commerce_customer_address['und'][0]['locality'];
+          $data['billingPostcode'] = $billing->commerce_customer_address['und'][0]['postal_code'];
+          $data['billingState'] = $billing->commerce_customer_address['und'][0]['administrative_area'];
+          $data['billingCountry'] = $billing->commerce_customer_address['und'][0]['country'];
 
-        if (isset($billing->field_phone['und'][0]['value'])) {
-          $data['billingPhone'] = $billing->field_phone['und'][0]['value'];
+          if (isset($billing->field_phone['und'][0]['value'])) {
+            $data['billingPhone'] = $billing->field_phone['und'][0]['value'];
+          }
         }
       }
 
