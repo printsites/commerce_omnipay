@@ -89,24 +89,25 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
         $data['shippingState'] = $shipping->commerce_customer_address['und'][0]['administrative_area'];
         $data['shippingCountry'] = $shipping->commerce_customer_address['und'][0]['country'];
       }
+
       // Non-PAN Request Information Logging
       $request_log = $data;
       $formattedAmount = number_format(commerce_currency_amount_to_decimal($charge['amount'], $charge['currency_code']),2);
       $request_log['currency'] = $charge['currency_code'];
       $request_log['amount'] = $formattedAmount;
-      $request_log['last_four']=substr((string)$pane_values['credit_card']['number'], -4);
+      $request_log['last_four'] = substr((string)$pane_values['credit_card']['number'], -4);
 
-      $data['number']=$pane_values['credit_card']['number'];
-      $data['expiryMonth']= $pane_values['credit_card']['exp_month'];
-      $data['expiryYear']= $pane_values['credit_card']['exp_year'];
-      $data['cvv']=$pane_values['credit_card']['code'];
+      $data['number'] = $pane_values['credit_card']['number'];
+      $data['expiryMonth'] = $pane_values['credit_card']['exp_month'];
+      $data['expiryYear'] = $pane_values['credit_card']['exp_year'];
+      $data['cvv'] = $pane_values['credit_card']['code'];
 
       $response = $gateway->purchase(
-          [
-              'amount' => $formattedAmount,
-              'currency' => $charge['currency_code'],
-              'card' => $data,
-          ]
+        [
+          'amount' => $formattedAmount,
+          'currency' => $charge['currency_code'],
+          'card' => $data,
+        ]
       )->send();
       $log = array('Successful'=>$response->isSuccessful(),'ReasonCode'=>$response->getCode(),'Message'=>$response->getMessage(),'AVSCode'=>$response->getAVSCode(),'TransReference'=>$response->getTransactionReference(),'RequestData'=>$request_log);
       watchdog("Commerce Omnipay", "<pre>" . json_encode($log). "</pre>");
