@@ -109,7 +109,14 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
           'card' => $data,
         ]
       )->send();
-      $log = array('Successful'=>$response->isSuccessful(),'ReasonCode'=>$response->getCode(),'Message'=>$response->getMessage(),'AVSCode'=>$response->getAVSCode(),'TransReference'=>$response->getTransactionReference(),'RequestData'=>$request_log);
+      $log = array(
+        'Successful' => $response->isSuccessful(),
+        'ReasonCode' => $response->getCode(),
+        'Message' => $response->getMessage(),
+        'AVSCode' => (method_exists($response, 'getAVSCode') ? $response->getAVSCode() : ""),
+        'TransReference' => $response->getTransactionReference(),
+        'RequestData' => $request_log
+      );
       watchdog("Commerce Omnipay", "<pre>" . json_encode($log). "</pre>");
       // Process response.
       if ($response->isSuccessful()) {
