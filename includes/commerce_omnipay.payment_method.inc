@@ -60,6 +60,8 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
       if (isset($order->commerce_customer_billing['und'][0]['profile_id'])) {
         $billing = commerce_customer_profile_load($order->commerce_customer_billing['und'][0]['profile_id']);
         if ($billing) {
+          $data['firstName'] = $billing->commerce_customer_address['und'][0]['first_name'];
+          $data['lastName'] = $billing->commerce_customer_address['und'][0]['last_name'];
           $data['billingAddress1'] = $billing->commerce_customer_address['und'][0]['thoroughfare'];
           $data['billingAddress2'] = $billing->commerce_customer_address['und'][0]['premise'];
           $data['billingCity'] = $billing->commerce_customer_address['und'][0]['locality'];
