@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * Fixes invalid method ids.
+ */
+function commerce_omnipay_update_7001(&$sandbox) {
+  db_update("commerce_payment_transaction")
+    ->fields(['payment_method' => 'omnipay'])
+    ->condition('payment_method', 'commerce_omnipay')
+    ->execute();
+}

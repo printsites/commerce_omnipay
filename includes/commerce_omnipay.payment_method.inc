@@ -41,14 +41,13 @@ function commerce_omnipay_omnipay_submit_form_validate() {
 function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form, $pane_values, $order, $charge) {
   $active_gateway = variable_get("commerce_omnipay_active_gateway", "");
   $all_gateways = commerce_omnipay_supported_gateways();
-
   // Ensure active gateway is actually valid.
   if (isset($pane_values['credit_card'])) {
     $gateway = Omnipay::create($all_gateways[$active_gateway]['gateway']);
     $current_params = commerce_omnipay_get_gateway_settings($active_gateway);
     $gateway->initialize($current_params);
 
-    $transaction = commerce_payment_transaction_new($payment_method['module'], $order->order_id);
+    $transaction = commerce_payment_transaction_new($payment_method['method_id'], $order->order_id);
     $transaction->instance_id = $payment_method['instance_id'].'|'.$all_gateways[$active_gateway]['gateway'];
     $transaction->amount = $charge['amount'];
     $transaction->currency_code = $charge['currency_code'];
