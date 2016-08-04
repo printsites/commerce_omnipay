@@ -39,6 +39,8 @@ function commerce_omnipay_omnipay_submit_form_validate() {
 }
 
 function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form, $pane_values, $order, $charge) {
+  global $user;
+
   $active_gateway = variable_get("commerce_omnipay_active_gateway", "");
   $all_gateways = commerce_omnipay_supported_gateways();
   // Ensure active gateway is actually valid.
@@ -55,8 +57,11 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
     $transaction->data['gateway'] = $active_gateway;
 
     try {
-
       $data = array();
+      $data['clientIp'] = ip_address();
+      $data['email'] = $user->mail;
+      $data['transactionId'] = $order->order_id;
+
       if (isset($order->commerce_customer_billing['und'][0]['profile_id'])) {
         $billing = commerce_customer_profile_load($order->commerce_customer_billing['und'][0]['profile_id']);
         if ($billing) {
