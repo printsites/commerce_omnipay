@@ -22,7 +22,7 @@ function commerce_omnipay_settings_form($form, &$form_state) {
 
   $form['current_active_gateway'] = array(
     '#type' => 'item',
-    '#markup' => '<h3>Current Gateway: '.(isset($gateways[$active_gateway]) ? $gateways[$active_gateway]['label'] : "No Active Gateway").'</h3>'
+    '#markup' => '<h3>Current Gateway: ' . (isset($gateways[$active_gateway]) ? $gateways[$active_gateway]['label'] : "No Active Gateway") . '</h3>'
 
   );
 
@@ -63,7 +63,7 @@ function commerce_omnipay_settings_form($form, &$form_state) {
       $default_value = (isset($current_params[$parm_key]) ? $current_params[$parm_key] : $default_params[$parm_key]);
       $var_type = gettype($parm_value);
       $label = "";
-      preg_match_all('/((?:^|[A-Z])[a-z]+)/',$parm_key,$label);
+      preg_match_all('/((?:^|[A-Z])[a-z]+)/', $parm_key, $label);
       $label = ucwords(implode(" ", array_pop($label)));
 
       switch ($var_type) {

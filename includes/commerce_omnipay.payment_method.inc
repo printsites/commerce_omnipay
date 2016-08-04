@@ -48,7 +48,7 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
     $gateway->initialize($current_params);
 
     $transaction = commerce_payment_transaction_new($payment_method['method_id'], $order->order_id);
-    $transaction->instance_id = $payment_method['instance_id'].'|'.$all_gateways[$active_gateway]['gateway'];
+    $transaction->instance_id = $payment_method['instance_id'] . '|' . $all_gateways[$active_gateway]['gateway'];
 
     $transaction->amount = $charge['amount'];
     $transaction->currency_code = $charge['currency_code'];
