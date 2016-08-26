@@ -7,6 +7,13 @@
                 $('.payment_gateway').prop('checked', false);
                 element.prop('checked', checked);
             });
+
+            $('#commerce-omnipay-settings-form fieldset legend').click(function() {
+                var fieldset = $(this).parent('fieldset.collapsible');
+
+                $(fieldset).children('.panel-body').slideToggle();
+                $(fieldset).toggleClass('show_body');
+            })
         }
     };
 })(jQuery);

@@ -1,0 +1,24 @@
+#commerce-omnipay-settings-form fieldset {
+    margin-bottom: .5em;
+}
+
+#commerce-omnipay-settings-form fieldset legend span.panel-title:before {
+    content: '\f077';
+    font: normal normal normal 16px/1 FontAwesome;
+    display: inline;
+    padding-right: .25em;
+    margin-left: -.25em;
+    color: #ccc;
+}
+
+#commerce-omnipay-settings-form fieldset.show_body legend span.panel-title:before {
+    content: '\f078';
+}
+
+#commerce-omnipay-settings-form fieldset .panel-body {
+    display: none;
+}
+
+#commerce-omnipay-settings-form fieldset.show_body .panel-body {
+    display: block;
+}

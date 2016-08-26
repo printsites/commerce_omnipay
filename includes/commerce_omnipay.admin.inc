@@ -23,19 +23,28 @@ function commerce_omnipay_settings_form($form, &$form_state) {
           'data' => drupal_get_path('module', 'commerce_omnipay') . '/js/commerce_omnipay.js',
         ]
       ],
+      'css' => [
+        [
+          'type' => 'file',
+          'data' => drupal_get_path('module', 'commerce_omnipay') . '/css/commerce_omnipay.css',
+        ]
+      ],
     ],
   ];
 
   foreach ($gateways as $key => $gateway_info) {
+    $show_body = strcasecmp($key, $active_gateway) == 0;
+    $enable = (isset($form_state['input'][$key]['enable']) ? TRUE : FALSE);
     $form[$key] = [
       '#type' => "fieldset",
       '#title' =>  "Settings For Gateway: " . $gateway_info['label'],
       '#tree' => TRUE,
       '#collapsible' => TRUE,
-      '#collapsed' => FALSE, // todo if active gateway FALSE else TRUE
+      '#collapsed' => FALSE,
       '#attributes' => [
         'class' => [
           'collapsible',
+          (($show_body or $enable) ? "show_body" : NULL),
         ],
       ],
       'help' => [
