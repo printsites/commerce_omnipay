@@ -12,49 +12,45 @@ function commerce_omnipay_settings_page() {
  * @return array
  */
 function commerce_omnipay_settings_form($form, &$form_state) {
-  $form = array();
   $gateways = commerce_omnipay_supported_gateways();
-  $gateway_options = array();
-  foreach ($gateways as $key => $value) {
-    $gateway_options[$key] = $value['label'];
-  }
   $active_gateway = variable_get("commerce_omnipay_active_gateway", "");
 
-  $form['current_active_gateway'] = array(
-    '#type' => 'item',
-    '#markup' => '<h3>Current Gateway: ' . (isset($gateways[$active_gateway]) ? $gateways[$active_gateway]['label'] : "No Active Gateway") . '</h3>'
-
-  );
-
-  $form['omnipay_active_gateway'] = array(
-    '#title' => t('Select Gateway'),
-    '#required' => TRUE,
-    '#type' => "select",
-    '#options' => $gateway_options,
-    '#default_value' => $active_gateway,
-  );
+  $form = [
+    '#attached' => [
+      'js' => [
+        [
+          'type' => 'file',
+          'data' => drupal_get_path('module', 'commerce_omnipay') . '/js/commerce_omnipay.js',
+        ]
+      ],
+    ],
+  ];
 
   foreach ($gateways as $key => $gateway_info) {
-    $form[$key] = array(
+    $form[$key] = [
       '#type' => "fieldset",
-      '#title' => "Settings For Gateway: " . $gateway_info['label'],
+      '#title' =>  "Settings For Gateway: " . $gateway_info['label'],
       '#tree' => TRUE,
-      '#collapsible' => FALSE,
-      '#collapsed' => FALSE,
-      '#states' => array(
-        'visible' => array(
-          ':input[name="omnipay_active_gateway"]' => array('value' => $key),
-        ),
-        'required' => array(
-          ':input[name="omnipay_active_gateway"]' => array('value' => $key),
-        ),
-      ),
-    );
-
-    $form[$key]['help'] = array(
-      '#type' => 'markup',
-      '#markup' => '<p>' . $gateway_info['description'] . '</p>',
-    );
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE, // todo if active gateway FALSE else TRUE
+      '#attributes' => [
+        'class' => [
+          'collapsible',
+        ],
+      ],
+      'help' => [
+      ],
+      'enable' => [
+        '#type' => 'checkbox',
+        '#attributes' => [
+          'class' => [
+            'payment_gateway',
+          ],
+        ],
+        '#title' => 'Enable ' . $gateway_info['label'],
+        '#default_value' => (!strcasecmp($active_gateway,$key) ? TRUE : FALSE),
+      ],
+    ];
 
     $gateway = Omnipay::create($gateway_info['gateway']);
     $default_params = $gateway->getDefaultParameters();
@@ -63,7 +59,7 @@ function commerce_omnipay_settings_form($form, &$form_state) {
       $default_value = (isset($current_params[$parm_key]) ? $current_params[$parm_key] : $default_params[$parm_key]);
       $var_type = gettype($parm_value);
       $label = "";
-      preg_match_all('/((?:^|[A-Z])[a-z]+)/', $parm_key, $label);
+      preg_match_all('/((?:^|[A-Z])[a-z]+)/',$parm_key,$label);
       $label = ucwords(implode(" ", array_pop($label)));
 
       switch ($var_type) {
@@ -89,32 +85,48 @@ function commerce_omnipay_settings_form($form, &$form_state) {
 
       }
     }
+
+    $form[$key]['payment'] = [
+      '#type' => 'radios',
+      '#title' => t('Transaction Workflow'),
+      '#default_value' => (isset($current_params['payment']) ? $current_params['payment'] : 'auth_cap'),
+      '#options' => [
+        'auth_cap' => t('Authorize and Capture payment at checkout'),
+        'auth_only' => t('Authorize payment at checkout, Capture payment when order completed.')
+      ],
+    ];
   }
 
-  $form['submit'] = array(
+  $form['#full_page_form'] = TRUE;
+
+  $form['submit'] = [
     '#type' => 'submit',
-    '#value' => 'Save Payment Settings',
-  );
+    '#value' => 'Save',
+    '#suffix' => l("Cancel", 'admin/commerce/payment'),
+  ];
 
   return $form;
 }
 
 function commerce_omnipay_settings_form_validate($form, &$form_state) {
+  $active = commerce_omnipay_get_active_gateway($form_state);
 
-  $active = $form_state['values']['omnipay_active_gateway'];
-  foreach ($form_state['values'][$active] as $key => &$value) {
-    $value = trim($value);
-    if ($value == "") {
-      //Could use a better error message.
-      form_set_error($key, "Please provide a value for " . $key);
+  if (isset($active) and isset($form_state['values'][$active])) {
+    foreach ($form_state['values'][$active] as $key => &$value) {
+      $value = trim($value);
+      if ("" == $value) {
+        //Could use a better error message.
+        form_set_error($key, "Please provide a value for " . $key);
+      }
     }
   }
-
 }
 
 function commerce_omnipay_settings_form_submit($form, &$form_state) {
-  variable_set("commerce_omnipay_active_gateway", $form_state['values']['omnipay_active_gateway']);
+  $active = commerce_omnipay_get_active_gateway($form_state);
+  variable_set("commerce_omnipay_active_gateway", $active);
   $gateways = commerce_omnipay_supported_gateways();
+
   foreach ($gateways as $key => $gateway_info) {
     $gateway_settings = $form_state['values'][$key];
     $gateway = Omnipay::create($gateway_info['gateway']);
@@ -124,4 +136,23 @@ function commerce_omnipay_settings_form_submit($form, &$form_state) {
     }
   }
   drupal_set_message("Payment settings updated");
+  commerce_payment_methods_reset();
+  entity_defaults_rebuild();
+  $form_state['redirect'] = 'admin/commerce/payment';
+}
+
+/**
+ * @param $form_state
+ * @return $key
+ */
+function commerce_omnipay_get_active_gateway($form_state) {
+  $gateways = commerce_omnipay_supported_gateways();
+
+  foreach ($gateways as $key => $value) {
+    if (TRUE == $form_state['values'][$key]['enable']) {
+      return $key;
+    }
+  }
+
+  return NULL;
 }

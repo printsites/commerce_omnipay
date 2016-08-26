@@ -35,7 +35,7 @@ function commerce_omnipay_omnipay_submit_form() {
 }
 
 function commerce_omnipay_omnipay_submit_form_validate() {
-
+  // todo Add validation.
 }
 
 function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form, $pane_values, $order, $charge) {
