@@ -94,7 +94,6 @@ function commerce_omnipay_supported_gateways() {
   drupal_alter('commerce_omnipay_gateways', $gateways);
 
   return $gateways;
-
 }
 
 function commerce_omnipay_get_gateway_settings($gateway) {

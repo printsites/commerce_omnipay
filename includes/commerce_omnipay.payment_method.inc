@@ -66,8 +66,7 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
 
     $transactionAmount = number_format(commerce_currency_amount_to_decimal($charge['amount'], $charge['currency_code']), 2);
 
-    // todo remove this next line
-    if (!isset($current_params['payment'])) $current_params['payment'] = 'purchase';
+    if (!isset($current_params['payment'])) $current_params['payment'] = 'auth_cap';
 
     switch ($current_params['payment']) {
       case 'auth_only':
@@ -213,7 +212,6 @@ function commerce_omnipay_refund_void($action, $transaction, $refund_amount) {
 }
 
 function commerce_omnipay_capture($transaction, $order_total) {
-  // todo - DR - can I get gateway from the transaction?
   $active_gateway = variable_get("commerce_omnipay_active_gateway", "");
   $all_gateways = commerce_omnipay_supported_gateways();
 
@@ -295,7 +293,10 @@ function commerce_omnipay_log_transaction($parameters) {
       break;
 
     case COMMERCE_CREDIT_PRIOR_AUTH_CAPTURE:
-      // todo add logic
+      $log['RequestData'] = [
+        'currency' => $parameters['charge']['currency_code'],
+        'amount' => $parameters['transactionAmount'],
+      ];
       break;
 
     case COMMERCE_CREDIT_CREDIT:
