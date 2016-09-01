@@ -353,6 +353,9 @@ function commerce_omnipay_set_billing_data($order, $data) {
       $data['billingState'] = $billing->commerce_customer_address['und'][0]['administrative_area'];
       $data['billingCountry'] = $billing->commerce_customer_address['und'][0]['country'];
 
+      //
+      // TODO: this field is required by some merchants but is too specific for the printsites platform
+      // and needs to be removed in some way.
       if (isset($billing->field_phone['und'][0]['value'])) {
         $data['billingPhone'] = $billing->field_phone['und'][0]['value'];
       }
