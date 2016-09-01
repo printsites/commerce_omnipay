@@ -294,7 +294,7 @@ function commerce_omnipay_log_transaction($parameters) {
 
     case COMMERCE_CREDIT_PRIOR_AUTH_CAPTURE:
       $log['RequestData'] = [
-        'currency' => $parameters['charge']['currency_code'],
+        'currency' => $parameters['response']->getData()['currency'],
         'amount' => $parameters['transactionAmount'],
       ];
       break;
