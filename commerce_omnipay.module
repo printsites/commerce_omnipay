@@ -1,5 +1,7 @@
 <?php
 
+include_once 'includes/commerce_omnipay.payment_method.inc';
+
 /**
  * Implements hook_menu().
  */
@@ -92,7 +94,6 @@ function commerce_omnipay_supported_gateways() {
   drupal_alter('commerce_omnipay_gateways', $gateways);
 
   return $gateways;
-
 }
 
 function commerce_omnipay_get_gateway_settings($gateway) {
@@ -103,4 +104,91 @@ function commerce_omnipay_get_gateway_settings($gateway) {
 
 function commerce_omnipay_set_gateway_settings($gateway, $settings) {
   return variable_set("commerce_omnipay_gateway_settings_" . $gateway, $settings);
+}
+
+function commerce_omnipay_order_cancelled($order) {
+  $payment_transactions = commerce_omnipay_get_categorized_transactions($order);
+
+  //check transactions
+  if (isset($payment_transactions['purchase'])) {
+    if (!isset($payment_transactions['refund'])) {
+      commerce_omnipay_refund_void('refund', $payment_transactions['purchase'], $payment_transactions['purchase']->amount/100.0);
+    }
+    else {
+      // This should never get executed but might be needed in the future.
+    }
+  }
+  elseif (isset($payment_transactions['authorize'])) {
+    commerce_omnipay_refund_void('void', $payment_transactions['authorize'], $payment_transactions['authorize']->amount/100.0);
+  }
+}
+
+function commerce_omnipay_order_completed($order) {
+  $payment_transactions = commerce_omnipay_get_categorized_transactions($order);
+
+  //     get order total amount
+  $order_total = $order->commerce_order_total[LANGUAGE_NONE][0]['amount'];
+  $currency_code = $order->commerce_order_total[LANGUAGE_NONE][0]['currency_code'];
+
+  // Has transaction been captured?
+  if (isset($payment_transactions['capture']) or isset($payment_transactions['purchase'])) {
+    // get amount captured
+    if (isset($payment_transactions['capture'])) {
+      $capture_transaction = $payment_transactions['capture'];
+    }
+    elseif (isset($payment_transactions['purchase'])) {
+      $capture_transaction = $payment_transactions['purchase'];
+    }
+    $amount_captured = $capture_transaction->amount;
+
+    // if amount captured is greater than order total amount
+    //   then refund the difference
+    if ($amount_captured > $order_total) {
+      $refund_amount = commerce_currency_amount_to_decimal($amount_captured - $order_total, $currency_code);
+      commerce_omnipay_refund_void('refund', $capture_transaction, $refund_amount);
+    }
+  }
+  elseif (isset($payment_transactions['authorize'])) {
+    // capture order total amount
+    // Note: The order total could be less than the amount authorized
+    //       if line items have been removed from the order.
+    commerce_omnipay_capture($payment_transactions['authorize'], commerce_currency_amount_to_decimal($order_total, $currency_code));
+  }
+}
+
+/**
+ * @param $order
+ * @return array
+ */
+function commerce_omnipay_get_categorized_transactions($order) {
+  $transactions = commerce_payment_transaction_load_multiple([], $conditions = ['order_id' => $order->order_id]);
+
+  $payment_transactions = [];
+  foreach ($transactions as $trans) {
+    switch ($trans->remote_status) {
+      case 'purchase':
+        $payment_transactions['purchase'] = $trans;
+        break;
+
+      case 'authorize':
+        $payment_transactions['authorize'] = $trans;
+        break;
+
+      case 'capture':
+        $payment_transactions['capture'] = $trans;
+        break;
+
+      case 'void';
+        $payment_transactions['void'] = $trans;
+        break;
+
+      case 'refund':
+        $payment_transactions['refund'] = $trans;
+        break;
+
+      default:
+        break;
+    }
+  }
+  return $payment_transactions;
 }
