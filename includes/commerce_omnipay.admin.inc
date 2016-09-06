@@ -16,6 +16,17 @@ function commerce_omnipay_settings_form($form, &$form_state) {
   $active_gateway = variable_get("commerce_omnipay_active_gateway", "");
 
   $form = [
+    'heading' => [
+      '#markup' => '<h2>Configure Payment Gateway</h2>',
+    ],
+    'description' => [
+      '#markup' => '<p>In order to accept credit card payments, enable and configure a payment gateway below.</p>',
+      '#attributes' => [
+        'class' => [
+          'configure_payment',
+        ],
+      ],
+    ],
     '#attached' => [
       'js' => [
         [
@@ -37,7 +48,7 @@ function commerce_omnipay_settings_form($form, &$form_state) {
     $enable = (isset($form_state['input'][$key]['enable']) ? TRUE : FALSE);
     $form[$key] = [
       '#type' => "fieldset",
-      '#title' =>  "Settings For Gateway: " . $gateway_info['label'],
+      '#title' => $gateway_info['label'],
       '#tree' => TRUE,
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,
@@ -97,11 +108,11 @@ function commerce_omnipay_settings_form($form, &$form_state) {
 
     $form[$key]['payment'] = [
       '#type' => 'radios',
-      '#title' => t('Transaction Workflow'),
+      '#title' => t('When do you want to capture the payment from your customer?'),
       '#default_value' => (isset($current_params['payment']) ? $current_params['payment'] : 'auth_cap'),
       '#options' => [
-        'auth_cap' => t('Authorize and Capture payment at checkout'),
-        'auth_only' => t('Authorize payment at checkout, Capture payment when order completed.')
+        'auth_cap' => t('Capture payment at time of checkout'),
+        'auth_only' => t('Capture payment when order completed in your Projects Queue.')
       ],
     ];
   }
