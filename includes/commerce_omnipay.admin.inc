@@ -117,6 +117,8 @@ function commerce_omnipay_settings_form($form, &$form_state) {
     ];
   }
 
+  //
+  // TODO: Remove.
   $form['#full_page_form'] = TRUE;
 
   $form['submit'] = [
@@ -155,9 +157,10 @@ function commerce_omnipay_settings_form_submit($form, &$form_state) {
       commerce_omnipay_set_gateway_settings($key, $gateway_settings);
     }
   }
+
   drupal_set_message("Payment settings updated");
   commerce_payment_methods_reset();
-  entity_defaults_rebuild();
+  //entity_defaults_rebuild();
   $form_state['redirect'] = 'admin/commerce/payment';
 }
 

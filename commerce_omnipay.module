@@ -71,13 +71,6 @@ function commerce_omnipay_supported_gateways() {
   );
 
   $gateways['WorldPay'] = array(
-    'label' => "PayPal",
-    'gateway' => "PayPal",
-    'description' => "PayPal is the faster, safer way to send money, make an online payment, receive money or set up a merchant account.",
-    'website' => "https://www.paypal.com/us/webapps/mpp/accept-payments-online",
-  );
-
-  $gateways['WorldPay'] = array(
     'label' => "WorldPay",
     'gateway' => "WorldPay",
     'description' => "At Worldpay, we can provide you with card processing services for your business from card machines, online payments to mail and telephone orders.",
@@ -103,7 +96,7 @@ function commerce_omnipay_get_gateway_settings($gateway) {
 }
 
 function commerce_omnipay_set_gateway_settings($gateway, $settings) {
-  return variable_set("commerce_omnipay_gateway_settings_" . $gateway, $settings);
+  variable_set("commerce_omnipay_gateway_settings_" . $gateway, $settings);
 }
 
 function commerce_omnipay_order_cancelled($order) {
