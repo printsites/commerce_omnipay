@@ -2,7 +2,7 @@
   "require": {
     "omnipay/stripe": "2.4.0",
     "omnipay/paypal": "2.5.5",
-    "omnipay/authorizenet": "2.4.2",
+    "omnipay/authorizenet": "dev-master",
     "omnipay/worldpay": "2.2"
   }
 }
