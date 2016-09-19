@@ -38,6 +38,7 @@
 #commerce-omnipay-settings-form fieldset legend span.panel-title {
     text-transform: capitalize;
     font-weight: bold;
+    cursor: pointer;
 }
 
 #commerce-omnipay-settings-form fieldset legend span.panel-title:before {
