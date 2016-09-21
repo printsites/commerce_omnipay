@@ -246,7 +246,7 @@ function commerce_omnipay_capture($transaction, $order_total) {
   // Process response.
   if ($response->isSuccessful()) {
     $trans_data = $response->getData();
-    $transaction->amount = $trans_data['amount'] - $trans_data['amount_refunded'];
+    $transaction->amount = commerce_currency_decimal_to_amount($transactionAmount, $transaction->currency_code);
     $transaction->remote_id = $response->getTransactionReference();
     $transaction->message = t('Capture completed successfully.');
     $transaction->status = COMMERCE_CREDIT_PRIOR_AUTH_CAPTURE;
@@ -258,7 +258,7 @@ function commerce_omnipay_capture($transaction, $order_total) {
   }
   else {
     // Save the failure response message to the original transaction.
-    $transaction->payload[REQUEST_TIME] = $response;
+    $transaction->payload[REQUEST_TIME] = $log;
     drupal_set_message(t('Capture failed.'));
     commerce_payment_transaction_save($transaction);
   }
