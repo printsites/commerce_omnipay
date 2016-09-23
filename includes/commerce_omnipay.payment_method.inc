@@ -205,7 +205,7 @@ function commerce_omnipay_refund_void($action, $transaction, $refund_amount) {
   }
   else {
     // Save the failure response message to the original transaction.
-    $transaction->payload[REQUEST_TIME] = $response;
+    $transaction->payload[REQUEST_TIME] = $log;
     drupal_set_message(t('Refund/Void failed.'));
     commerce_payment_transaction_save($transaction);
   }
