@@ -4,7 +4,7 @@ core = 7.x
 version = 7.x-1.x-dev
 package = Commerce (contrib)
 dependencies[] = commerce_payment
-dependencies[] = composer_manager
+
 
 
 
