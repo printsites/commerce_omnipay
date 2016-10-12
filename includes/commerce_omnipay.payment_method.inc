@@ -64,7 +64,7 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
     $data['email'] = $user->mail;
     $data['transactionId'] = $order->order_id;
 
-    $transactionAmount = number_format(commerce_currency_amount_to_decimal($charge['amount'], $charge['currency_code']), 2);
+    $transactionAmount = number_format(commerce_currency_amount_to_decimal($charge['amount'], $charge['currency_code']), 2, ".", "");
 
     if (!isset($current_params['payment'])) $current_params['payment'] = 'auth_cap';
 
