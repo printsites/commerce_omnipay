@@ -34,6 +34,7 @@ function commerce_omnipay_permission() {
  * Implements hook_commerce_payment_method_info().
  */
 function commerce_omnipay_commerce_payment_method_info() {
+
   $payment_methods['omnipay'] = array(
     'base' => 'commerce_omnipay_omnipay',
     'title' => t('Omnipay'),
@@ -44,10 +45,36 @@ function commerce_omnipay_commerce_payment_method_info() {
     'offsite' => FALSE,
     'offsite_autoredirect' => FALSE,
     'file' => 'includes/commerce_omnipay.payment_method.inc',
-
   );
+
   return $payment_methods;
 }
+
+/**
+ * Implements hook_entity_update().
+ */
+function commerce_omnipay_entity_update($entity, $type) {
+  switch ($type) {
+    case 'commerce_order':
+
+      if ($entity->status == "canceled" && $entity->original->status != "canceled") {
+        if (isset($entity->data['payment_method']) &&
+          (FALSE !== stripos($entity->data['payment_method'], 'commerce_payment_omnipay'))) {
+          commerce_omnipay_order_cancelled($entity);
+        }
+      }
+
+      if ($entity->status == "completed" && $entity->original->status != "completed") {
+        if (isset($entity->data['payment_method']) &&
+          (FALSE !== stripos($entity->data['payment_method'], 'commerce_payment_omnipay'))) {
+          commerce_omnipay_order_completed($entity);
+        }
+      }
+
+      break;
+  }
+}
+
 
 /**
  * List supported gateways.
@@ -99,6 +126,10 @@ function commerce_omnipay_set_gateway_settings($gateway, $settings) {
   variable_set("commerce_omnipay_gateway_settings_" . $gateway, $settings);
 }
 
+
+/**
+ * @param $order
+ */
 function commerce_omnipay_order_cancelled($order) {
   $payment_transactions = commerce_omnipay_get_categorized_transactions($order);
 
@@ -116,6 +147,9 @@ function commerce_omnipay_order_cancelled($order) {
   }
 }
 
+/**
+ * @param $order
+ */
 function commerce_omnipay_order_completed($order) {
   $payment_transactions = commerce_omnipay_get_categorized_transactions($order);
 
