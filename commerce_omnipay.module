@@ -8,7 +8,8 @@ include_once 'includes/commerce_omnipay.payment_method.inc';
 function commerce_omnipay_menu() {
   $items = array();
   $items['admin/commerce/payment-gateways'] = array(
-    'title' => 'Payment',
+    'title' => 'Payment Gateways',
+    'description' => 'Configure payment gateways',
     'page callback' => 'commerce_omnipay_settings_page',
     'access arguments' => array('administer payment gateways'),
     'type' => MENU_NORMAL_ITEM,
