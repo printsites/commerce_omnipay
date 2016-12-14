@@ -1,0 +1,63 @@
+.page-admin-commerce-payment-credit-card .content > div.box {
+    padding-left: 20px;
+}
+
+#commerce-omnipay-settings-form h2 {
+    font-size: 22px;
+    margin-bottom: 5px;
+}
+
+#commerce-omnipay-settings-form p.configure_payment {
+    margin-bottom: .5em;
+}
+
+#commerce-omnipay-settings-form fieldset {
+    margin-bottom: .5em;
+    padding: 3px 0 5px;
+}
+
+#commerce-omnipay-settings-form fieldset input[type="text"],
+#commerce-omnipay-settings-form fieldset select {
+    max-width: 400px;
+}
+
+#commerce-omnipay-settings-form fieldset.panel {
+    border-bottom: 3px solid #ddd;
+    border-left: 0 none;
+    margin-bottom: 0;
+}
+
+#commerce-omnipay-settings-form fieldset:first-of-type.panel {
+    border-top: 3px solid #ddd;
+}
+
+#commerce-omnipay-settings-form fieldset legend.panel-heading {
+    float: left;
+}
+
+#commerce-omnipay-settings-form fieldset legend span.panel-title {
+    text-transform: capitalize;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#commerce-omnipay-settings-form fieldset legend span.panel-title:before {
+    content: '\f078';
+    font: normal normal normal 16px/1 FontAwesome;
+    display: inline;
+    padding-right: .25em;
+    margin-left: -.25em;
+    color: #ccc;
+}
+
+#commerce-omnipay-settings-form fieldset.show_body legend span.panel-title:before {
+    content: '\f077';
+}
+
+#commerce-omnipay-settings-form fieldset .panel-body {
+    display: none;
+}
+
+#commerce-omnipay-settings-form fieldset.show_body .panel-body {
+    display: block;
+}

@@ -1,1 +1,7 @@
 name = Commerce Omnipay
+description = Multiple payment gateway support using commerce Omnipay
+core = 7.x
+version = 7.x-1.x-dev
+package = Commerce (contrib)
+dependencies[] = commerce_payment
+

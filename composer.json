@@ -1,0 +1,19 @@
+{
+  "name" : "drupal/commerce_omnipay",
+  "description": "A drupal wrapper around omnipay.",
+  "type": "drupal-module",
+  "minimum-stability": "dev",
+  "license": "GPL",
+  "authors": [
+    {
+      "name": "Matt Wisner",
+      "email": "mwisner@printsites.com"
+    }
+  ],
+  "require": {
+    "omnipay/stripe": "2.4.0",
+    "omnipay/paypal": "2.5.5",
+    "omnipay/authorizenet": "dev-master",
+    "omnipay/worldpay": "2.2"
+  }
+}
