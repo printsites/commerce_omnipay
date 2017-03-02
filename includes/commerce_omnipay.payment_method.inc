@@ -61,7 +61,7 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
     $data = commerce_omnipay_set_card_data($pane_values, $data);
 
     $data['clientIp'] = ip_address();
-    $data['email'] = $user->mail;
+    $data['email'] = isset($user->mail) ? $user->mail : $order->mail;
     $data['transactionId'] = $order->order_id;
 
     $transactionAmount = number_format(commerce_currency_amount_to_decimal($charge['amount'], $charge['currency_code']), 2, ".", "");
@@ -91,6 +91,7 @@ function commerce_omnipay_omnipay_submit_form_submit($payment_method, $pane_form
       )->send();
     } catch (Exception $e) {
       drupal_set_message($e->getMessage());
+      return FALSE;
     }
 
     $log = commerce_omnipay_log_transaction([
